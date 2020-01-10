@@ -1,0 +1,13 @@
+--Oracle判断表是否存在
+--这是一个存储过程，作用是判断这张表是否存在，如果存在并将它删除
+declare
+i int;
+begin
+  select count(1) into i from user_tables where table_name='table_name';
+  if i > 0 then
+    execute immediate 'drop table table_name';
+    dbms_output.put_line('该表存在并已删除！');
+  elsif i = 0 then
+    dbms_output.put_line('该表不存在！');
+  end if;
+end;
