@@ -1,0 +1,23 @@
+/*查询某个值在哪张表中的哪个字段*/
+/*以下代码中需要填写两个值：1.表的用户名 2.要查找的值*/
+/*在PL/SQL Developer -> Command Window中执行以下代码*/
+set serveroutput on
+declare
+  v_sql varchar2(2000);
+  v_count number;
+begin
+  for cur in(select t.owner, t.table_name, t.column_name
+             from dba_tab_columns t
+             where t.owner = '这里填写用户名') /*这里的where条件是，在此用户下的表中查找，如果去掉这个where条件就是在所有用户下的表中查找*/
+    loop
+      begin v_sql := 'select count(1) from ' || cur.owner || '.' || cur.table_name || ' where ' || cur.column_name || ' like ''%要查找的值%'''; 
+      execute immediate v_sql into v_count;
+      if(v_count >= 1) then
+        dbms_output.put_line(cur.owner || ':' || cur.table_name || ':' || cur.column_name);
+      end if;
+      exception
+        when others then
+          null;
+      end;
+    end loop;
+end;
